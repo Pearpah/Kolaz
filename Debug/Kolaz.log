@@ -1,0 +1,4 @@
+﻿  stdafx.cpp
+  Kolaz.cpp
+LINK : fatal error LNK1104: cannot open file 'opencv_calib3d300d.lib'
+D:\SOFTWARE\VisualStudio\Common7\IDE\VC\VCTargets\Microsoft.CppCommon.targets(651,5): error MSB6006: "link.exe" exited with code 1104.

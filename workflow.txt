@@ -1,0 +1,13 @@
+1. Loading files
+	a. load main file
+	b. load images that will add up to the final image
+		- store a downscaled version (map<filename, mat>)
+2. User input
+	a. number of chunks of the main image		-	N
+	b. accuracy	-	M
+		- how downsampled will the compared chunks be
+3. Analysis of the main file
+	a. splitting image into N chunks
+	b. downsampling them to M
+	c. storing 
+4. 
