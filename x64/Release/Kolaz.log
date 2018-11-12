@@ -1,6 +1,9 @@
-﻿  stdafx.cpp
-  Kolaz.cpp
+﻿  collage.cpp
+d:\@projekty@\programowanie\2018\kolaz\kolaz\kolaz\collage.cpp(62): warning C4129: '%': unrecognized character escape sequence
+d:\@projekty@\programowanie\2018\kolaz\kolaz\kolaz\collage.cpp(89): warning C4129: '%': unrecognized character escape sequence
   Generating code
-  All 71 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  30 of 627 functions ( 4.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    8 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Kolaz.vcxproj -> D:\@PROJEKTY@\Programowanie\2018\Kolaz\Kolaz\x64\Release\Kolaz.exe

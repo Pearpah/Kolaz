@@ -11,26 +11,8 @@ using namespace std;
 class collage
 {
 public:
-	collage();
-	~collage();
-
-	Mat			original;
-	Mat			output;
-	vector<Mat> partial_images_s;
-	vector<Mat> partial_images_b;
-
-	int size;
-	int numberOfChunks;
-
-	void kolazuj();
-private:
-
-	int evaluateDifference(vector<int> v);
-	int compareChunks(Mat &a, Mat &b, int x = 0, int y = 0);
-
-
-
-	void reSample(Mat &img, Size siz)
+	static void kolazuj(Mat original, int number_of_chunks, int frag_size, vector<pair<Mat, string>> mapa);
+	static void reSample(Mat &img, Size siz)
 	{
 		//resize(img, img, siz, 0, 0, INTER_NEAREST);
 		//resize(img, img, siz, 0, 0, INTER_AREA);
@@ -38,6 +20,12 @@ private:
 		resize(img, img, siz, 0, 0, INTER_CUBIC);
 		//resize(img, img, siz, 0, 0, INTER_LANCZOS4);
 	}
+private:
+	static void make_final_image(std::vector<int> &score, std::vector<string> &return_array, cv::Mat &output, int frag_size, int number_of_chunks);
+	static int	evaluateDifference(vector<int> v);
+	static int	compareChunks(Mat &a, Mat &b, int x = 0, int y = 0);
+	static void create_configuration(int size, vector<pair<Mat, string>> mapa, cv::Mat &original, std::vector<int> &score, std::vector<string> &return_array);
+	   
 
 
 };

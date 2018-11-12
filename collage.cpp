@@ -4,53 +4,93 @@
 
 
 
-collage::collage()
+//Repeating variables
+//No need for the return_array and score to be two different entities
+//It should be returning a Mat
+void collage::kolazuj(Mat original, int number_of_chunks, int frag_size, vector<pair<Mat,string>> mapa)
 {
+	//Output image
+	Mat output(Size(number_of_chunks*frag_size, number_of_chunks*frag_size), CV_8UC3);
+	//Resizing original picture before chunking
+	reSample(original, cv::Size(number_of_chunks, number_of_chunks));
+	//Filenames in positions
+	vector<string> return_array(number_of_chunks*number_of_chunks);
+	//Scores of the best filename in position
+	vector<int> score(number_of_chunks*number_of_chunks);
+	//Smaller score = better
+	std::fill(score.begin(), score.end(), INT_MAX);
+	//Creates configuration of filenames (by best score)
+	cout << "\n \tbegin configuration";
+	create_configuration(number_of_chunks, mapa, original, score, return_array);
+	//Creates final image
+	cout << "\n \tbegin making the final image";
+	make_final_image(score,return_array, output, frag_size, number_of_chunks);
+	cout << endl;
+	imshow("OriginalImage",original);
+	imshow("FinalIMage", output);
 }
 
 
-collage::~collage()
+//If the image is reccuring it should add it to some kind of memory 
+/*
+*	Perhaps it would be wiser to instead of iterating over pixels
+*	iterate over the configuration
+*		- no need to upload the same image twice
+*/
+void collage::make_final_image(std::vector<int> &score, std::vector<string> &return_array, cv::Mat &output, int frag_size, int number_of_chunks)
 {
+	//int s = partial_images_b[0].rows;
+	int j = 0;
+	int i = 0;
+	int counter = 0;
+	//Size of scores should be the same as the size of height*width of image that we want to construct
+	//#pragma omp parallel for
+	for (int a = 0; a<score.size(); a++)
+	{
+		//Iterates over the rows
+		//If the column reaches the last one go to the next rows and 0 the col
+		if (i > number_of_chunks - 1) { j++; i = 0; }
+		//Reads the file
+		Mat img = imread(return_array[i+j* number_of_chunks]);
+		//Resamples it to wanted size
+		reSample(img, Size(frag_size, frag_size));
+		//Copies it
+		img.copyTo(output(Rect(i*frag_size, j*frag_size, frag_size, frag_size)));
+		//Next col!
+		i++;
+		counter++;
+		cout << "\r" + to_string(counter * 100 / score.size()) + "\%";
+	}
+
 }
 
-void collage::kolazuj()
+void collage::create_configuration(int size, vector<pair<Mat, string>> mapa, cv::Mat &original, std::vector<int> &score, std::vector<string> &return_array)
 {
-	Mat output(Size(size*numberOfChunks, size*numberOfChunks), CV_8UC3);
-	reSample(original, cv::Size(size, size));
-	vector<int> wyjsciowe(size*size);
-	vector<int> wynik(size*size);
-	std::fill(wynik.begin(), wynik.end(), INT_MAX);
+	int counter = 0;
+	//#pragma omp parallel for
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size; j++)
 		{
-			for (int x = 0; x<partial_images_s.size(); x++)
+			for (int x = 0; x<mapa.size(); x++)
 			{
-				int tmp = compareChunks(partial_images_s[x], original, i, j);
-				if (tmp < wynik[i*size + j])
+				//Compares miniature of an image to a rectangle in original
+				int tmp = compareChunks(mapa[x].first, original, i, j);
+				//If score is better place it in the scoreboard
+				//Same with the return array
+				if (tmp < score[i*size + j])
 				{
-					wynik[i*size + j] = tmp;
-					wyjsciowe[i*size + j] = x;
+					score[i*size + j] = tmp;
+					return_array[i*size + j] = mapa[x].second;
 				}
 			}
-			cout << "\r" << i+1 << " " << j+1 << "\t - "<<i*size+j+1 << "\t " << size*size;
 		}
+		counter++;
+		cout << "\r" + to_string(counter * 100 / size) + "\%";
 	}
-
-	int s = partial_images_b[0].rows;
-	int j = 0;
-	int i = 0;
-	for (int a = 0; a<wynik.size(); a++)
-	{
-		if (i > size - 1) { j++; i = 0; }
-		/*reSample(wektor_mniejsze[wyjsciowe[i + j * sizer]], Size(fragment_size, fragment_size));
-		wektor_mniejsze[wyjsciowe[i+j*sizer]].copyTo(ret(Rect(i*s, j*s, fragment_size,fragment_size)));*/
-		partial_images_b[wyjsciowe[i + j*size]].copyTo(output(Rect(i*s, j*s, numberOfChunks, numberOfChunks)));
-		i++;
-	}
-	imshow("kupa",original);
-	imshow("aet", output);
 }
+
+
 
 int collage::evaluateDifference(vector<int> v)
 {
